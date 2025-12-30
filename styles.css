@@ -1,0 +1,1335 @@
+:root {
+--nozzle-w: 26px;
+  --panel-w: 460px; /* was 280px */
+  --gray-border: #ccc;
+  --line-gray: #555;
+  --light-bg: #fafafa;
+  --vcm-cell-h: 30px;
+}/* layout */
+/* App header (matches PWM Nozzle Selector look) */
+.app-header{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:14px 18px;
+  background:#0b2b4c;
+  color:#fff;
+  position:sticky;
+  top:0;
+  z-index:10;
+}
+
+.app-header .title{font-weight:700}
+.header-actions{display:flex; gap:10px; align-items:center}
+/* space below header */
+.app-header { margin-bottom: 12px; }
+
+/* (optional) also give the status line a little breathing room */
+.status-msg { margin-top: 6px; }
+
+.btn-light {
+  background: #e9eef5;              /* soft blue-gray background */
+  color: #0f172a;                   /* dark navy text for contrast */
+  border: 1px solid #c3ccd9;        /* subtle but visible border */
+  padding: 6px 14px;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.15s ease, border-color 0.15s ease;
+}
+
+.btn-light:hover {
+  background: #dce5f2;              /* brighter hover */
+  border-color: #9ba7b8;            /* slightly stronger border */
+}
+
+.btn-light:active {
+  background: #cdd7e6;
+}
+body {
+font-family: Arial, sans-serif;
+  padding: 20px;
+  background: #fff;
+}.page-title {
+margin-left: 30px;
+  margin-bottom: 12px;
+}.row {
+display: flex;
+  gap: 14px;
+  align-items: flex-start;
+  margin-left: 30px;
+  margin-bottom: 16px;
+}/* panels */
+.panel, .vcm-panel {
+width: var(--panel-w);           /* hub + vcm same size */
+  background: var(--light-bg);
+  border: 1px solid var(--gray-border);
+  border-radius: 8px;
+  padding: 14px 16px 12px 16px;
+}.panel {
+display: flex;
+  flex-direction: column;
+  gap: 8px;
+}/* hub ports in 2 rows of 4 so no horizontal scroll */
+.panel .hub-ports {
+display: grid;
+  grid-template-columns: repeat(4, minmax(90px, 1fr));
+  gap: 6px;
+  width: 100%;
+  box-sizing: border-box;
+}.panel label {
+display: flex;
+  gap: 4px;
+  align-items: center;
+  margin-left: 25px; /* adjust ±2px for perfect edge alignment */
+  font-size: 13px;
+  justify-content: space-between;
+}.panel label span {
+min-width: 130px;
+}.panel input[type="number"] {
+width: 78px;
+  padding: 2px 4px;
+  height: 30px;
+  font-size: 13px;
+  box-sizing: border-box;
+}#resetBtn {
+width: 78px;
+  margin-left: auto;
+  padding: 4px 0;
+  background: #eee;
+  border: 1px solid #888;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 12px;
+  text-align: center;
+}#resetBtn:hover {
+background: #e0e0e0;
+}/* vcm panel scroll */
+.vcm-panel {
+max-height: 320px;
+  overflow-y: auto;
+  overflow-x: visible; /* make sure no side scroll */
+}
+/* boom canvas */
+.boom {
+  position: relative;
+  margin: 12px auto 0 auto;
+  /* no border here */
+  border-radius: 6px;
+  background: #fff;
+  min-height: 230px;
+  padding: 16px 0 60px 0; /* bottom gutter for labels/legend */
+  width: fit-content;
+}
+.boom::before {
+  content: "";
+  position: absolute;
+  /* Match the padding, but stop 60px short at the bottom */
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 60px;          /* <-- trims the border where the gutter begins */
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  pointer-events: none;  /* purely decorative */
+}
+/* nozzles */
+.nozzle-row {
+position: absolute;
+  left: 0;
+  display: flex;
+  z-index: 10;
+}.nozzle {
+width: 26px;
+  font-size: 10px;
+  text-align: center;
+  background: #fff;
+  border: 1px solid rgba(0,0,0,.12);
+  border-radius: 3px;
+  box-sizing: border-box;
+}/* boom lines */
+.boom-line {
+position: absolute;
+  height: 3px;
+  background: #000;
+  z-index: 5;
+}.slope {
+position: absolute;
+  height: 2px;
+  background: rgba(0,0,0,.4);
+  transform-origin: 0 0;
+  z-index: 3;
+}.fold-line {
+position: absolute;
+  width: 12px;
+  border: 2px solid #555;
+  border-radius: 8px;
+  background: rgba(80,80,80,.05);
+  z-index: 4;
+}.fold-label {
+position: absolute;
+  font-size: 10px;
+  background: #fff;
+  border: 1px solid rgba(0,0,0,.1);
+  padding: 1px 4px;
+  border-radius: 4px;
+  transform: translateX(-50%);
+  z-index: 9;
+  white-space: nowrap;
+}.tip-line {
+position: absolute;
+  width: 2px;
+  background: #555;
+  z-index: 7;
+}.center-bar {
+position: absolute;
+  height: 2px;
+  background: #555;
+  z-index: 6;
+}/* hub */
+.hub {
+position: absolute;
+  width: 40px;
+  height: 45px;
+  background: #000;
+  color: #fff;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  font-weight: 600;
+  z-index: 20;
+  writing-mode: vertical-rl;
+  text-orientation: upright;
+}/* vcm drawn layer */
+.vcm-layer {
+  position: absolute;
+  inset: 0;
+  pointer-events: auto;   /* allow clicks */
+  z-index: 30;
+}
+
+/* keep everything else non-interactive; only labels clickable */
+.vline, .hline, .vcm { pointer-events: none; }
+.ext-label { pointer-events: auto; cursor: pointer; }
+
+
+.vcm {
+position: absolute;
+  width: 26px;
+  height: 14px;
+  background: #000;
+  color: #fff;
+  font-size: 9px;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}.vline {
+position: absolute;
+  width: 1px;
+  background: #aaa;
+}.hline {
+position: absolute;
+  height: 1px;
+  background: #888;
+}.rail-dot {
+position: absolute;
+  width: 4px;
+  height: 4px;
+  background: #888;
+  border-radius: 50%;
+}.ext-label {
+position: absolute;
+  background: #fff;
+  border: 1px solid rgba(0,0,0,0.1);
+  padding: 1px 4px;
+  font-size: 10px;
+  border-radius: 3px;
+  transform: translate(-50%, -50%);
+}/* vcm input rows (panel) */
+.vcm-row {
+display: grid;
+  grid-template-columns: 52px repeat(3, auto);
+  gap: 6px;
+  align-items: center;
+  margin-bottom: 4px;
+}.vcm-row > div:first-child {
+font-size: 11px;
+  font-weight: 600;
+  color: #333;
+}.vcm-row input {
+width: 50px;
+}/* generic tiny bump (outside vcm-cells) */
+.bump {
+width: 20px;
+  height: 18px;
+  font-size: 10px;
+  padding: 0;
+}/* vcm cell (3 per row) */
+.vcm-cell {
+display: flex;
+  align-items: center;
+  gap: 0;
+}.vcm-cell input[type="number"] {
+width: 40px;
+  height: var(--vcm-cell-h);
+  text-align: center;
+  font-size: 13px;
+  padding: 2px 2px;
+  border: 1px solid #999;
+  border-radius: 0;
+  box-sizing: border-box;
+  -moz-appearance: textfield;
+}.vcm-cell input[type="number"]::-webkit-outer-spin-button, .vcm-cell input[type="number"]::-webkit-inner-spin-button {
+-webkit-appearance: none;
+  margin: 0;
+}.vcm-cell .bump {
+width: 30px;                  /* was 24px */
+  height: var(--vcm-cell-h);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;              /* bigger so arrow is obvious */
+  border: 1px solid #999;
+  background: #f3f3f3;
+  border-radius: 0;
+  margin: 0;
+  box-sizing: border-box;
+  line-height: 1;
+  cursor: pointer;
+  user-select: none;
+}.vcm-cell .bump:first-child {
+border-radius: 4px 0 0 4px;
+  border-right: none;
+}.vcm-cell .bump:last-of-type {
+border-radius: 0 4px 4px 0;
+  border-left: none;
+}/* arrows by default */
+.vcm-shift-left::before {
+content: "◀";
+}.vcm-shift-right::before {
+content: "▶";
+}/* when we have a shift count, JS will add .has-shift and set textContent */
+.vcm-shift-left.has-shift::before, .vcm-shift-right.has-shift::before {
+content: "";
+}/* hide shift number entirely but keep element for JS */
+.shift-flag {
+display: none !important;
+}.error {
+color: #b00020;
+  margin-top: 12px;
+  font-size: 12px;
+}/* refined arrow and number display */
+.vcm-cell .bump {
+position: relative;
+  width: 32px;
+  height: var(--vcm-cell-h);
+  background: #f3f3f3;
+  border: 1px solid #999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  overflow: hidden;
+  color: transparent; /* hide text when not shifted */
+}/* smaller centered arrows */
+.vcm-shift-left::before, .vcm-shift-right::before {
+content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 60%;
+  height: 60%;
+  transform: translate(-50%, -50%);
+  background: #000;
+  pointer-events: none;
+  clip-path: polygon(0 50%, 100% 0, 100% 100%);
+  z-index: 0;
+}.vcm-shift-right::before {
+clip-path: polygon(0 0, 100% 50%, 0 100%);
+}/* shifted state: show number on top of arrow */
+.vcm-cell .bump.has-shift {
+color: #fff !important;
+  font-size: 13px;
+  font-weight: 700;
+  position: relative;
+  z-index: 2;        /* force number on top */
+}.vcm-cell .bump.has-shift::before {
+z-index: 1;        /* arrow sits behind number */
+}/* draw the number from data-shift so it can't hide */
+.vcm-cell .bump.has-shift::after {
+content: attr(data-shift);
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: #ffa500;                 /* orange number */
+  font-size: 16px;
+  font-weight: 700;
+  text-shadow: 0 0 2px #000, 0 0 3px #000; /* dark halo for contrast */
+  z-index: 3;
+  pointer-events: none;
+}/* 1. panels row = equal height */
+/* --- unified row + panel layout --- */
+
+.row {
+  display: flex;
+  gap: 14px;
+  align-items: stretch;
+  margin-left: 30px;
+  margin-bottom: 16px;
+}
+
+.vcm-panel {
+  width: var(--panel-w);
+  max-height: 340px;
+  overflow-y: auto;
+  overflow-x: visible;
+  flex: 0 0 auto;
+  display: flex;
+  flex-direction: column;
+}
+
+/* --- panel label + input alignment --- */
+.panel label {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 10px;
+  margin-bottom: 6px;
+}
+
+.panel label span {
+  min-width: 140px !important;
+}
+
+.panel input[type="number"],
+.panel select {
+  height: 30px !important;
+  line-height: 30px !important;
+}
+
+
+/* === LEFT PANEL: mirror styles1.css exactly (scoped) === */
+.row > .panel:first-of-type {
+  width: 240px !important;
+  max-width: 240px !important;
+  background: #fafafa !important;
+  border: 1px solid #ccc !important;
+  border-radius: 8px !important;
+  padding: 14px 16px !important;
+  display: flex
+  flex-direction: column !important;
+  gap: 10px !important;
+  height: auto !important;      /* undo prior fixed heights */
+  min-height: auto !important;  /* undo prior min-heights */
+}
+
+/* labels exactly like styles1 */
+.row > .panel:first-of-type label {
+  display: flex !important;
+  gap: 4px !important;
+  align-items: center !important;
+  font-size: 13px !important;
+  justify-content: space-between !important;
+  margin: 0 !important; /* remove extra spacing from other rules */
+}
+
+.row > .panel:first-of-type label span {
+  min-width: 130px !important;
+}
+
+/* number inputs in left panel */
+.row > .panel:first-of-type input[type="number"] {
+  width: 70px !important;
+  padding: 2px 4px !important;
+  height: auto !important;      /* styles1 doesn't force 30px */
+  font-size: inherit !important;
+  box-sizing: content-box !important;
+}
+
+/* reset button exactly like styles1 */
+.row > .panel:first-of-type #resetBtn {
+  width: 70px !important;
+  margin-left: auto !important;
+  padding: 3px 0 !important;
+  background: #eee !important;
+  border: 1px solid #888 !important;
+  border-radius: 4px !important;
+  cursor: pointer !important;
+}
+
+.row > .panel:first-of-type #resetBtn:hover {
+  background: #e0e0e0 !important;
+}
+
+/* ensure any earlier tweak doesn't offset totalNozzles */
+.row > .panel:first-of-type #totalNozzles {
+  margin-left: 0 !important;
+}
+/* === lock panel heights to match left panel === */
+.row > .panel:first-of-type,
+.row > .vcm-panel,
+.row > .parts-panel {
+  height: 360px;
+  min-height: 360px;
+  max-height: 360px;
+}
+/* === Align boom graphic with left edge of left panel === */
+.boom {
+  margin-left: 30px !important; /* adjust ±2–4px if it’s slightly off visually */
+}
+/* === VCM help icon & popover (mobile-friendly) === */
+.vcm-panel .help-row {
+  position: relative;
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  margin-bottom: 8px;
+}
+.parts-header-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.vcm-panel .help-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  background: #fafafa;
+  font-weight: 700;
+  font-size: 16px;
+  line-height: 1;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  user-select: none;
+  touch-action: manipulation;
+}
+
+.vcm-panel .help-icon:focus {
+  outline: 2px solid #555;
+  outline-offset: 2px;
+}
+
+/* Popover container (anchored to help-row) */
+.vcm-panel .help-pop {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  z-index: 999;
+  max-width: 360px;
+  min-width: 260px;
+  background: #fff;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  box-shadow: 0 8px 24px rgba(0,0,0,.12);
+}
+
+/* Popover body */
+.vcm-panel .help-pop-body {
+  padding: 12px 14px;
+  font-size: 13px;
+  color: #222;
+}
+
+.vcm-panel .help-pop-body ol {
+  margin: 6px 0 0 18px;
+  padding: 0;
+}
+
+@media (max-width: 640px) {
+  .vcm-panel .help-pop {
+    right: 4px;            /* keep on-screen on small devices */
+    left: 4px;
+    max-width: none;
+    min-width: 0;
+  }
+}
+/* === Place info button inline on the right edge of Hub row === */
+.vcm-panel .help-row {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: flex-end !important;
+  margin: 0 !important;
+  margin-left: auto !important; /* push it to the far right of the line */
+  position: relative !important;
+}
+
+.vcm-panel .help-icon {
+  margin-left: 6px; /* small space from dropdown */
+}
+/* Anchor the info button without shifting the Hub row */
+.vcm-panel { position: relative; }
+
+.vcm-panel .help-row {
+  position: absolute !important;
+  top: 12px;        /* align with label cap height */
+  right: 46px;      /* match panel padding */
+  display: flex !important;
+  align-items: center !important;
+  margin: 0 !important;
+}
+/* === style help button blue === */
+.vcm-panel .help-icon {
+  background: #007bff !important;   /* standard bright blue */
+  color: #fff !important;
+  border: 1px solid #005fcc !important;
+}
+
+.vcm-panel .help-icon:hover {
+  background: #005fcc !important;   /* darker on hover */
+}
+/* Parts panel */
+.parts-panel { width: var(--panel-w); }
+.parts-title { margin: 0 0 8px 0; font-size: 16px; }
+.parts-list-wrap {
+  border: 1px solid var(--gray-border);
+  border-radius: 6px;
+  overflow: hidden;
+  background: #fff;
+
+  /* fill remaining panel height and allow scrolling */
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+}
+.parts-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+.parts-table thead th {
+  position: sticky; top: 0;
+  background: #f4f4f4; border-bottom: 1px solid #ddd; text-align: left; padding: 6px 8px;
+}
+.parts-table tbody td { padding: 6px 8px; border-bottom: 1px solid #eee; }
+.parts-footer { margin-top: 8px; font-size: 12px; color: #555; }
+:root{
+  --boom-gutter: 25px;   /* was 60px */
+  --boom-min-h: 260px;   /* give extensions more headroom */
+}
+
+/* boom canvas */
+.boom{
+  position: relative;
+  margin: 12px auto 0 auto;
+  border-radius: 6px;
+  background: #fff;
+  min-height: var(--boom-min-h);
+  padding: 16px 0 var(--boom-gutter) 0;  /* keep gutter in one place */
+  width: fit-content;
+  overflow: hidden; /* clip anything that tries to sneak outside */
+}
+
+/* frame = top + sides only, stopping before the gutter */
+.boom::before{
+  content:"";
+  position:absolute;
+  inset:0;
+  pointer-events:none;
+  border-radius: 6px 6px 0 0;
+  background:
+    linear-gradient(#ddd,#ddd) 0 0 / 100% 1px no-repeat,                         /* top */
+    linear-gradient(#ddd,#ddd) 0 0 / 1px calc(100% - var(--boom-gutter)) no-repeat,  /* left */
+    linear-gradient(#ddd,#ddd) 100% 0 / 1px calc(100% - var(--boom-gutter)) no-repeat;/* right */
+}
+.boom-actions {
+  margin-top: 18px;      /* keep your spacing */
+  margin-left: 7px;      /* keep your magic alignment */
+  display: flex;
+  justify-content: flex-start;
+  position: relative;    /* NEW: participate in stacking */
+  z-index: 40;           /* NEW: above vcm-layer (30) */
+}
+/* inline status + red outline */
+.status-msg { margin-left:30px; font-size:12px; color:#b00020; }
+.invalid { border-color:#b00020 !important; box-shadow:0 0 0 2px rgba(176,0,32,.15); }
+.title-row {
+  display:flex; align-items:center; gap:10px;
+  margin-left:30px; margin-top:-4px; margin-bottom:12px;
+}
+.title-row #configName {
+  height:30px;
+  padding:4px 28px 4px 8px;  /* extra right padding for arrow */
+  font-size:14px;
+  min-width:240px;
+  border:1px solid #ccc;
+  border-radius:6px;
+}
+.config-input-wrap {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+}
+
+.config-dropdown-btn {
+  position: absolute;
+  right: 6px;
+  top: 50%;
+  transform: translateY(-50%);
+  border: none;
+  background: transparent;
+  padding: 0 6px;          /* bigger click area */
+  margin: 0;
+  cursor: pointer;
+
+  font-size: 24px;         /* bigger arrow */
+  font-weight: 500;        /* a bit bolder */
+  line-height: 1;
+  color: #444;
+
+  display: flex;           /* center the ▾ glyph */
+  align-items: center;
+  justify-content: center;
+}
+
+.config-dropdown-btn:hover {
+  color: #000;
+}
+
+
+.title-row .btn {
+  height:30px; padding:0 10px; font-size:13px; cursor:pointer;
+  border:1px solid #888; border-radius:6px; background:#f3f3f3;
+}
+.title-row .btn:hover { background:#e9e9e9; }
+
+/* Boom meta labels */
+.boom-title {
+  position: absolute;
+  top: 6px;
+  left: 8px;
+  font-size: 12px;
+  color: #333;
+  background: rgba(255,255,255,0.9);
+  padding: 2px 6px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  z-index: 50;
+}
+
+#boomInfo {
+  position: absolute;
+  top: 6px;
+  right: 8px;
+  font-size: 12px;
+  color: #333;
+  background: rgba(255,255,255,0.9);
+  padding: 2px 6px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  z-index: 50;
+  text-align: right;
+}
+.ext-label {
+  position: absolute;
+  transform: translate(-50%, 0);
+  font-size: 11px;
+  line-height: 1;
+  color: #333;
+  background: #fff;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  padding: 2px 6px;
+  white-space: nowrap;
+  z-index: 40;
+}
+.ext-label::after { /* small tag pointer (black) */
+  content: "";
+  position: absolute;
+  top: -6px;
+  left: 50%;
+  transform: translateX(-50%);
+  border-width: 0 6px 6px 6px;
+  border-style: solid;
+  border-color: transparent transparent #000 transparent; /* black tip */
+}
+.ext-label::before { /* inner white to overlay the border tip */
+  content: "";
+  position: absolute;
+  top: -5px;
+  left: 50%;
+  transform: translateX(-50%);
+  border-width: 0 5px 5px 5px;
+  border-style: solid;
+  border-color: transparent transparent #fff transparent;
+}
+/* ===== PRINT LAYOUT ===== */
+@media print {
+  @page {
+    size: Letter landscape;        /* or: A4 landscape */
+    margin: 10mm;
+  }
+   .site-header {
+    position: static !important;
+  }
+
+  /* Exact colors for lines/labels */
+  body {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  /* Hide UI you don't want on paper */
+  .no-print,
+  .help-pop,
+  .export-buttons { display: none !important; }
+
+  /* Page 1: keep the three panels together */
+  #printTop {
+    page-break-after: always;      /* boom starts on next page */
+    break-after: page;
+  }
+
+  /* Avoid panel/table splitting */
+  #builderPanel,
+  .vcm-panel,
+  .parts-panel,
+  #partsPanel,
+  #partsTable,
+  #partsTable thead,
+  #partsTable tbody,
+  #partsTable tr,
+  #partsTable th,
+  #partsTable td {
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+
+  /* Let the parts table grow fully on page 1 */
+  .parts-list-wrap,
+  #partsPanel,
+  #partsTable {
+    max-height: none !important;
+    overflow: visible !important;
+  }
+
+  /* Page 2+: boom only */
+  #printBoom {
+    page-break-before: always;
+    break-before: page;
+  }
+
+  /* Fit boom to 1–2 pages by default */
+  #boom {
+    transform-origin: top left;
+    transform: scale(0.90);        /* adjust if you need tighter fit */
+  }
+
+  /* Keep title/info visible if a boom page splits */
+  .boom-title,
+  #boomInfo {
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+  }
+}
+/* --- simple modal --- */
+.modal-overlay[hidden]{ display:none !important; }
+.modal-overlay{
+  position:fixed; inset:0; background:rgba(0,0,0,.35);
+  display:flex; align-items:center; justify-content:center; z-index:1000;
+}
+.modal{
+  background:#fff; border-radius:12px; width:620px; max-width:92vw; max-height:86vh;
+  display:flex; flex-direction:column; box-shadow:0 10px 30px rgba(0,0,0,.25);
+}
+.modal-lg{ width:900px; }
+.modal-header{
+  display:flex; align-items:center; justify-content:space-between;
+  padding:12px 16px; border-bottom:1px solid #e8edf3;
+}
+.modal-title{ font-weight:700; }
+.modal-close{
+  background:transparent;
+  border:0;
+  font-size:20px;      /* slightly bigger X */
+  cursor:pointer;
+  padding:4px 10px;    /* bigger hitbox for finger taps */
+  margin-right:-4px;   /* keeps it visually tight to the edge */
+}
+.modal-body{ padding:14px 16px; overflow:auto; }
+.modal-footer{ display:flex; gap:10px; justify-content:flex-end; padding:12px 16px; border-top:1px solid #e8edf3; }
+.grid2{ display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+.grid2 label{ display:flex; flex-direction:column; gap:6px; font-size:12px; }
+.grid2 input, .grid2 select{ height:34px; padding:6px 8px; border:1px solid #cfd6df; border-radius:8px; }
+.checkbox{ display:flex; align-items:center; gap:8px; }
+.form-error{ color:#b00020; font-size:12px; margin-top:6px; }
+
+/* browse */
+.browse-toolbar{ display:flex; gap:10px; align-items:center; margin-bottom:10px; }
+.browse-toolbar input[type="search"]{ flex:1; height:34px; padding:6px 8px; border:1px solid #cfd6df; border-radius:8px; }
+.browse-list{ display:flex; flex-direction:column; gap:8px; }
+.browse-card{
+  display:grid; grid-template-columns:1fr auto; gap:6px; padding:10px 12px;
+  border:1px solid #e2e8f0; border-radius:10px;
+}
+.browse-title{ font-weight:700; }
+.browse-meta{ font-size:12px; color:#52606d; }
+.browse-actions{ display:flex; gap:8px; align-items:center; }
+.badge{ font-size:11px; padding:2px 8px; border-radius:999px; background:#eef2f7; }
+.badge.factory{ background:#e8f1ff; }
+.badge.mine{ background:#e9fbea; }
+
+/* buttons */
+.btn{ height:32px; padding:0 12px; border:1px solid #d9dde3; border-radius:8px; background:#fff; cursor:pointer;}
+.btn.primary{ background:#0b2b4c; color:#fff; border-color:#0b2b4c; }
+.btn:disabled{ opacity:.6; cursor:not-allowed; }
+
+.help-pop { z-index: 3000; }
+
+/* Ensure modal overlay is always on top */
+#browseOverlay {
+  position: fixed;       /* already should be fixed, but reinforcing it */
+  z-index: 9999 !important;
+}
+
+/* Ensure the X button is clickable */
+#browseOverlay .modal-header {
+  position: relative;
+  z-index: 10000 !important;
+}
+
+#browseClose {
+  position: relative;
+  z-index: 10001 !important;
+  cursor: pointer;
+}
+/* ===== CAPSTANAG HEADER ===== */
+.site-header{
+  position:sticky;
+  top:0;
+  z-index:1000;
+  background:#000;
+}
+
+.header-inner{
+  max-width:1100px;
+  margin:0 auto;
+  padding:14px 18px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:24px;
+}
+
+.brand-link{
+  display:flex;
+  align-items:center;
+  text-decoration:none;
+}
+
+.brand-logo{
+  height:34px;
+  width:auto;
+  display:block;
+}
+
+.tool-nav{
+  display:flex;
+  align-items:center;
+  gap:14px;
+  font-size:14px;
+  color:#e5e7eb;
+}
+
+.tool-label{
+  opacity:0.9;
+  font-weight:500;
+  margin-right:6px;
+  white-space:nowrap;
+}
+
+.tool-link{
+  padding:5px 14px;
+  border-radius:999px;
+  border:1px solid rgba(255,255,255,0.35);
+  color:#e5e7eb;
+  text-decoration:none;
+  font-size:13px;
+  white-space:nowrap;
+}
+
+.tool-link:hover{
+  background:rgba(255,255,255,0.12);
+}
+
+.tool-link.active{
+  background:#ffffff;
+  color:#000;
+  border-color:#ffffff;
+}
+
+/* Mobile */
+@media (max-width:720px){
+  .header-inner{
+    flex-direction:column;
+    align-items:flex-start;
+    gap:12px;
+  }
+
+  .tool-nav{
+    flex-wrap:wrap;
+    gap:10px;
+  }
+}
+/* === Related Docs / Documentation Styling === */
+
+/* Panel spacing */
+#relatedDocsPanel {
+  margin-top: 12px;
+}
+
+/* Panel header */
+#relatedDocsPanel .card-header {
+  padding: 8px 12px;
+  border-bottom: 1px solid #ddd;
+}
+
+#relatedDocsPanel h2 {
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+/* Section headings */
+#relatedDocsPanel h3 {
+  font-size: 0.85rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: #555;
+}
+
+/* Empty-state text */
+#platformDocsEmpty,
+#boomDocsEmpty {
+  font-style: italic;
+  color: #777;
+}
+
+/* Tables */
+#platformDocsTable,
+#boomDocsTable {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 4px;
+}
+
+#platformDocsTable th,
+#boomDocsTable th {
+  padding: 6px 4px;
+  border-bottom: 1px solid #ccc;
+  font-weight: 600;
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  color: #555;
+}
+
+#platformDocsTable td,
+#boomDocsTable td {
+  padding: 6px 4px;
+  border-bottom: 1px solid #eee;
+  font-size: 0.82rem;
+  line-height: 1.3;
+  vertical-align: top;
+}
+
+/* Zebra + hover */
+#platformDocsTable tbody tr:nth-child(even),
+#boomDocsTable tbody tr:nth-child(even) {
+  background: #fafafa;
+}
+
+#platformDocsTable tbody tr:hover,
+#boomDocsTable tbody tr:hover {
+  background: #f2f6ff;
+}
+
+/* Links */
+#relatedDocsPanel a {
+  text-decoration: none;
+  border-bottom: 1px solid transparent;
+}
+
+#relatedDocsPanel a:hover {
+  border-bottom-color: currentColor;
+}
+
+/* “Applies to” + platform/make/model text */
+#platformDocsTable td div {
+  margin-top: 2px;
+}
+
+/* Demo controls card */
+#loadDocsDemoBtn {
+  padding: 4px 10px;
+  font-size: 0.85rem;
+  border-radius: 4px;
+  border: 1px solid #ccc;
+  background: #f7f7f7;
+  cursor: pointer;
+}
+
+#loadDocsDemoBtn:hover {
+  background: #ececec;
+}
+
+/* === Wide-mode documentation table layout === */
+
+#relatedDocsPanel {
+  margin-top: 20px;
+  width: 100%;
+}
+
+#relatedDocsPanel .card-body {
+  overflow-x: auto;      /* horizontal scroll when needed */
+  padding: 12px 14px;
+}
+
+/* Make tables full width but scrollable */
+#platformDocsTable,
+#boomDocsTable {
+  min-width: 650px;       /* ensures proper spacing on narrow devices */
+  width: 100%;
+}
+/* Boom-specific docs add row */
+.boom-docs-add {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin-bottom: 6px;
+  align-items: center;
+}
+
+.boom-docs-add input {
+  flex: 1 1 140px;
+  padding: 4px 6px;
+  font-size: 0.8rem;
+}
+
+#boomDocAddBtn {
+  padding: 4px 8px;
+  font-size: 0.8rem;
+  border-radius: 4px;
+  border: 1px solid #ccc;
+  background: #f7f7f7;
+  cursor: pointer;
+}
+
+#boomDocAddBtn:hover {
+  background: #ececec;
+}
+
+.boom-docs-action-btn {
+  padding: 2px 6px;
+  font-size: 0.75rem;
+  border-radius: 3px;
+  border: 1px solid #d33;
+  background: #fbe7e7;
+  color: #900;
+  cursor: pointer;
+}
+
+.boom-docs-action-btn:hover {
+  background: #f7cccc;
+}
+/* === Platform doc bundle selector === */
+
+.bundle-selector {
+  margin-bottom: 6px;
+  font-size: 0.8rem;
+}
+
+.bundle-selector-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 12px;
+}
+
+.bundle-row {
+  display: flex;
+  align-items: baseline;
+  gap: 4px;
+  cursor: pointer;
+}
+
+.bundle-row input[type="checkbox"] {
+  margin: 0;
+}
+
+.bundle-title {
+  font-weight: 600;
+}
+
+.bundle-meta {
+  font-size: 0.75rem;
+  color: #666;
+}
+.boom-docs-edit-btn,
+.boom-docs-save-edit-btn,
+.boom-docs-cancel-edit-btn {
+  padding: 2px 6px;
+  font-size: 0.75rem;
+  border-radius: 3px;
+  border: 1px solid #ccc;
+  background: #f7f7f7;
+  cursor: pointer;
+  margin-right: 4px;
+}
+
+.boom-docs-edit-btn:hover,
+.boom-docs-save-edit-btn:hover,
+.boom-docs-cancel-edit-btn:hover {
+  background: #ececec;
+}
+/* === Install Instructions Panel === */
+
+#installPanel {
+  margin-top: 12px;
+  width: 100%;
+}
+
+#installPanel .card-body {
+  font-size: 0.82rem;
+}
+
+#btnGenerateInstall {
+  padding: 4px 10px;
+  font-size: 0.8rem;
+  border-radius: 4px;
+  border: 1px solid #ccc;
+  background: #f7f7f7;
+  cursor: pointer;
+  margin-bottom: 8px;
+}
+
+#btnGenerateInstall:hover {
+  background: #ececec;
+}
+
+.install-output h4 {
+  margin: 8px 0 4px;
+  font-size: 0.9rem;
+}
+
+.install-output ol {
+  margin: 0 0 6px 18px;
+  padding: 0;
+}
+/* === Panel show/hide toggles === */
+
+.panel-toggles {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 12px 8px;
+  font-size: 0.8rem;
+  border-bottom: 1px solid #ddd;
+}
+
+.panel-toggles-label {
+  font-weight: 600;
+  color: #444;
+}
+
+.panel-toggle-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  cursor: pointer;
+}
+
+.panel-toggle-item input[type="checkbox"] {
+  margin: 0;
+}
+#boomDocsTable .boom-doc-url {
+  font-size: 0.75rem;
+  color: #555;
+  margin-top: 2px;
+  word-break: break-all;
+}
+/* === Docs + Install panels: layout & spacing polish (MVP) === */
+
+/* Align with main row (builder/VCM/parts use margin-left:30px) */
+#relatedDocsPanel,
+#installPanel {
+  margin-left: 30px;
+  margin-right: 30px;
+  max-width: 1100px;
+}
+
+/* Consistent card body padding */
+#relatedDocsPanel .card-body,
+#installPanel .card-body {
+  padding: 10px 12px;
+}
+
+/* Empty-state text: consistent look */
+#platformDocsEmpty,
+#boomDocsEmpty {
+  padding: 6px 0 8px;
+  font-style: italic;
+  color: #777;
+}
+
+/* Keep tables readable on narrow devices (already scrollable) */
+#platformDocsTable,
+#boomDocsTable {
+  min-width: 650px;
+}
+
+/* Slight breathing room between sections */
+#relatedDocsPanel section + hr {
+  margin: 10px 0;
+}
+/* Final UX spacing tighten */
+.card {
+  margin-bottom: 16px;
+}
+
+#relatedDocsPanel,
+#installPanel {
+  margin-top: 20px !important;
+}
+
+.panel-toggles {
+  margin-left: 30px;
+  margin-right: 30px;
+}
+.meta-approval-fields { margin-left: 22px; margin-top: 8px; }
+.stack > label { display: block; margin: 6px 0; }
+/* === TEMP: Hide Platform / Machine Docs (UI-only, preserve DOM & JS) === */
+#platformDocsSection { display: none !important; }
+
+/* Hide the divider that follows Platform docs */
+#platformDocsSection + hr { display: none !important; }
+
+/* If you still see 2 divider lines in this card, hide all HRs inside Related Docs */
+#relatedDocsPanel hr { display: none !important; }
+.install-table { width:100%; border-collapse:collapse; font-size:12px; }
+.install-table th, .install-table td { border:1px solid #ddd; padding:6px 8px; vertical-align:top; }
+.install-table thead th { background:#f6f7f9; }
+/* === Install Instructions Readability === */
+.install-doc {
+  font-size: 14px;           /* was effectively ~12px */
+  line-height: 1.45;         /* improve scanability */
+}
+
+.install-doc p {
+  margin: 0 0 10px 0;
+}
+
+.install-doc ul {
+  margin: 6px 0 14px 20px;
+  padding: 0;
+}
+
+.install-doc li {
+  margin-bottom: 8px;        /* key change: space between bullets */
+}

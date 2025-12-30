@@ -1,0 +1,449 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Boom Configurator</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+<header class="site-header">
+  <div class="header-inner">
+
+    <!-- Logo -->
+    <a href="https://www.capstanag.com" class="brand-link">
+      <img src="CapstanLogo.png" alt="CapstanAG" class="brand-logo">
+    </a>
+
+    <!-- Tool selector -->
+ <div class="tool-nav">
+  <span class="tool-label">Capstan Tools</span>
+
+  <!-- Knowledgebase -->
+  <a href="https://capstanag.github.io/Knowledgebase/"
+     class="tool-link">
+    Knowledgebase
+  </a>
+
+  <!-- Boom Config (this tool) -->
+  <a href="https://capstanag.github.io/boom-configurator/"
+     class="tool-link active">
+    Boom Config
+  </a>
+</div>
+
+  </div>
+</header>
+
+
+<div id="vcmStatus" class="status-msg" aria-live="polite"></div>
+
+<!-- Keep config name input, but move it below header only -->
+<div class="title-row no-print">
+  <button id="btnSave" class="btn-light">Save</button>
+
+  <div class="config-input-wrap">
+    <input
+      id="configName"
+      type="text"
+      placeholder="Choose a config or type a new name…"
+      aria-label="Configuration name"
+    >
+    <button
+      id="btnConfigDropdown"
+      type="button"
+      class="config-dropdown-btn"
+      aria-label="Select pre-loaded configuration"
+    >
+      ▾
+    </button>
+  </div>
+</div>
+
+<div class="panel-toggles no-print">
+  <span class="panel-toggles-label">Show:</span>
+
+  <label class="panel-toggle-item">
+    <input type="checkbox" id="toggleBuildVcm" checked>
+    <span>Build &amp; VCM</span>
+  </label>
+
+  <label class="panel-toggle-item">
+    <input type="checkbox" id="toggleParts" checked>
+    <span>Parts List</span>
+  </label>
+
+  <label class="panel-toggle-item">
+    <input type="checkbox" id="toggleDocs" checked>
+    <span>Docs</span>
+  </label>
+
+  <label class="panel-toggle-item">
+    <input type="checkbox" id="toggleInstall" checked>
+    <span>Install Instructions</span>
+  </label>
+</div>
+
+
+
+<!-- PRINT PAGE 1: all three panels -->
+<div id="printTop">
+  <div class="row">
+    <!-- BOOM INPUT PANEL -->
+    <div class="panel" id="builderPanel">
+      <label><span>Total Nozzles</span><input id="totalNozzles" type="number" value="54" min="1" max="200"></label>
+      <label><span>Nozzle Spacing (in)</span><input id="nozzleSpacing" type="number" value="20" min="1"></label>
+      <label><span>Breakaway / side</span><input id="breakaway" type="number" value="4" min="0"></label>
+      <label><span>Outer fold / side</span><input id="outerFold" type="number" value="0" min="0"></label>
+      <label><span>Inner fold / side</span><input id="innerFold" type="number" value="12" min="0"></label>
+      <label><span>Primary / side</span><input id="primaryFold" type="number" value="24" min="0"></label>
+      <label><span>Gateway (shift)</span><input id="gatewayMount" type="number" value="0" min="-99" max="99"></label>
+      <button id="resetBtn">Reset</button>
+    </div>
+
+
+
+
+    <!-- VCM PANEL -->
+<div class="panel vcm-panel" id="vcmPanel">
+  <!-- PLACE the help row here, as the FIRST child -->
+  <div class="help-row" data-qa="vcm-help">
+    <button type="button" class="help-icon" aria-expanded="false" aria-controls="vcm-help-pop" aria-label="How to use VCM inputs">i</button>
+    <div id="vcm-help-pop" class="help-pop" role="dialog" hidden>
+      <div class="help-pop-body">
+        <strong>VCM Input Guide</strong>
+        <ol>
+          <li>Enter <em>Total Nozzles</em> for each VCM (max 12).</li>
+          <li>Use the ◀/▶ buttons to align the VCM exactly where it will be installed.</li>
+          <li>If a VCM position has been manually shifted, the shift count appears inside the arrow button.</li>
+        </ol>
+      </div>
+    </div>
+  </div>
+
+  <label>Hub
+    <select id="hubMode">
+      <option value="lite">Lite (4)</option>
+      <option value="standard">Standard (8)</option>
+    </select>
+  </label>
+  <div id="vcmFields"></div>
+</div> <!-- ✅ CLOSES VCM PANEL -->
+
+
+
+<!-- ✅ PARTS PANEL is a separate sibling inside .row -->
+<div class="panel parts-panel" id="partsPanel">
+  <div class="parts-header-row">
+    <h3 class="parts-title">Suggested Parts List</h3>
+    <button id="btnPartsCsv" class="btn-light no-print">Export Parts List</button>
+  </div>
+
+  <div class="parts-list-wrap">
+    <table class="parts-table" id="partsTable">
+      <thead>
+        <tr><th>Part #</th><th>Description</th><th>Qty</th></tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+  </div>
+</div>
+</div> <!-- ✅ CLOSES .row -->
+
+</div> <!-- ✅ CLOSES #printTop -->
+
+
+<!-- PRINT PAGE 2+: boom only -->
+<div id="printBoom">
+  <div class="boom" id="boom">
+    <div id="nozzles" class="nozzle-row"></div>
+    <div id="vcmLayer" class="vcm-layer"></div>
+
+    <!-- meta labels -->
+    <div id="boomTitle" class="boom-title"></div>
+    <div id="boomInfo"  class="boom-info"></div>
+
+    <!-- BUTTON INSIDE the boom panel container -->
+    <div class="boom-actions no-print">
+      <button id="btnPng" class="btn-light">Export Boom</button>
+    </div>
+
+  </div>
+</div>
+
+<!-- Related Docs & Links Panel -->
+<div class="card" id="relatedDocsPanel">
+  <div class="card-header">
+    <h2 style="margin:0;font-size:1rem;">Related Docs & Links</h2>
+  </div>
+  <div class="card-body">
+
+    <!-- Platform docs (bundles) -->
+    <section id="platformDocsSection">
+      <h3 style="margin:0 0 6px;font-size:0.9rem;">Platform / Machine Docs</h3>
+
+      <!-- Table: header + existing assets -->
+      <table id="platformDocsTable"
+             style="width:100%;border-collapse:collapse;font-size:0.85rem;display:none;">
+        <thead>
+          <tr>
+            <th style="text-align:left;padding:4px 2px;">Type</th>
+            <th style="text-align:left;padding:4px 2px;">Title</th>
+            <th style="text-align:left;padding:4px 2px;">Applies To</th>
+            <th style="text-align:left;padding:4px 2px;">Notes</th>
+          </tr>
+        </thead>
+        <tbody id="platformDocsBody"></tbody>
+      </table>
+
+      <!-- Empty state when no assets -->
+      <div id="platformDocsEmpty" style="font-size:0.85rem;color:#777;display:none;">
+        No platform documentation linked to this config.
+      </div>
+
+      <!-- Option to load / link additional assets -->
+      <div id="platformBundleSelector" class="bundle-selector no-print">
+        <!-- JS will populate this -->
+      </div>
+    </section>
+
+    <hr style="margin:10px 0;border:none;border-top:1px solid #ddd;">
+
+    <!-- Boom-specific docs -->
+    <section id="boomDocsSection">
+      <h3 style="margin:0 0 6px;font-size:0.9rem;">
+  Installation, Integration, and Machine-Specific Documentation and Notes
+</h3>
+
+      <!-- Table: header + existing boom-specific docs -->
+      <table id="boomDocsTable"
+             style="width:100%;border-collapse:collapse;font-size:0.85rem;display:none;">
+        <thead>
+          <tr>
+            <th style="text-align:left;padding:4px 2px;">Type</th>
+            <th style="text-align:left;padding:4px 2px;">Title</th>
+            <th style="text-align:left;padding:4px 2px;">Notes</th>
+            <th class="no-print" style="text-align:left;padding:4px 2px;">Actions</th>
+          </tr>
+        </thead>
+        <tbody id="boomDocsBody"></tbody>
+      </table>
+
+      <!-- Empty state when no assets -->
+      <div id="boomDocsEmpty" style="font-size:0.85rem;color:#777;display:none;">
+        No boom-specific documentation for this config.
+      </div>
+
+      <!-- Option to add additional boom-specific assets -->
+      <div class="boom-docs-add no-print">
+        <input
+          id="boomDocType"
+          type="text"
+          placeholder="Type (e.g., Install Note)"
+          aria-label="Boom doc type"
+        >
+        <input
+          id="boomDocTitle"
+          type="text"
+          placeholder="Title*"
+          aria-label="Boom doc title"
+          required
+        >
+        <input
+          id="boomDocUrl"
+          type="url"
+          placeholder="URL (optional)"
+          aria-label="Boom doc URL"
+        >
+        <input
+          id="boomDocNotes"
+          type="text"
+          placeholder="Notes (optional)"
+          aria-label="Boom doc notes"
+        >
+        <button id="boomDocAddBtn" type="button">Add</button>
+      </div>
+
+    </section>
+
+  </div>
+</div>
+
+<!-- Install Instructions Panel -->
+<div class="card" id="installPanel">
+  <div class="card-header">
+    <h2 style="margin:0;font-size:1rem;">Install Instructions</h2>
+  </div>
+  <div class="card-body">
+    <button id="btnGenerateInstall" type="button">Generate from Current Boom</button>
+    <button id="btnPrintInstall" type="button">Print Instructions</button>
+    <div id="installOutput" class="install-output">
+      <p style="font-size:0.82rem;color:#777;">
+        Click "Generate from Current Boom" to build draft install steps based on the current boom inputs.
+      </p>
+    </div>
+  </div>
+</div>
+
+
+
+
+  <div id="err" class="error no-print"></div>
+<script>
+// === Seeded Factory Presets (MVP requirement) ===
+window.FACTORY_PRESETS = [
+  {
+    id: "ET-G4-120ft-20in-Lite",
+    name: "ET G4 • Steel 5-fold • 120ft • 20\" • Lite",
+    version: "3.8.0",
+    createdAt: "2025-01-01T00:00:00Z",
+    updatedAt: "2025-01-01T00:00:00Z",
+    source: "factory",
+
+    meta: {
+      make: "Equipment Technologies",
+      model: "G4",
+      boomType: "Steel 5-fold",
+      width: 120,
+      widthUnit: "ft",
+      spacing: 20,
+      totalNozzles: 72,
+      hubMode: "lite",
+      variant: "",
+      tags: []
+    },
+
+    structure: {
+      gatewayMount: 0,
+      folds: {
+        breakaway: 4,
+        outer: 10,
+        inner: 18,
+        primary: 36
+      }
+    },
+
+    vcm: {
+      mode: "lite",
+      data: {
+        1: { v1:{nozzles:12,shift:0}, v2:{nozzles:12,shift:0}, v3:{nozzles:0,shift:0} },
+        2: { v1:{nozzles:12,shift:0}, v2:{nozzles:0,shift:0}, v3:{nozzles:0,shift:0} },
+        3: { v1:{nozzles:12,shift:0}, v2:{nozzles:12,shift:0}, v3:{nozzles:0,shift:0} },
+        4: { v1:{nozzles:12,shift:0}, v2:{nozzles:0,shift:0}, v3:{nozzles:0,shift:0} }
+      }
+    },
+
+    extensions: {
+      overrides: {},
+      fiveFootDrops: []
+    },
+
+    platformDocBundles: ["PP3-ET-LSeries-Core-Docs"],
+    boomSpecificDocs: [],
+
+    metadata: {
+      scope: "FACTORY_PRESET",
+      status: "APPROVED",
+      createdBy: "factory",
+      createdAt: "2025-01-01T00:00:00Z",
+      updatedAt: "2025-01-01T00:00:00Z",
+      docsVersion: 1,
+      installStepsVersion: 1
+    },
+
+    installSteps: {
+      version: 1,
+      generatedAt: null,
+      contentHtml: "",
+      source: "factory"
+    }
+  }
+];
+</script>
+
+
+
+  <!-- logic -->
+  <script src="boom.js?v=1"></script>
+  <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+<!-- Save/Save As metadata dialog -->
+<div id="saveMetaOverlay" class="modal-overlay" hidden>
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title">Save Configuration</div>
+      <button class="modal-close" data-close="#saveMetaOverlay">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="grid2">
+        <label>Make*<input id="metaMake" type="text" placeholder="e.g., Equipment Technologies"></label>
+        <label>Model*<input id="metaModel" type="text" placeholder="e.g., G4"></label>
+        <label>Boom Type*<input id="metaBoomType" type="text" placeholder="e.g., Steel 5-fold"></label>
+        <label>Boom Width*<input id="metaWidth" type="number" step="0.1" placeholder="e.g., 120"></label>
+        <label>Width Unit*
+          <select id="metaWidthUnit">
+            <option value="ft">ft</option>
+            <option value="m">m</option>
+          </select>
+        </label>
+        <label>Nozzle Spacing (in)*<input id="metaSpacing" type="number" step="0.01" placeholder="e.g., 20"></label>
+        <label>Hub Mode*
+          <select id="metaHubMode">
+            <option value="lite">Lite</option>
+            <option value="standard">Standard</option>
+          </select>
+        </label>
+        <label>Variant (optional)<input id="metaVariant" type="text" placeholder="e.g., High-Flow"></label>
+      </div>
+
+<div class="meta-row">
+  <div class="stack">
+    <label class="checkbox">
+      <input id="metaOptSaveLocal" type="checkbox" checked>
+      <span>Save to My Configs</span>
+    </label>
+  </div>
+</div>
+
+<div class="meta-row">
+  <button type="button" id="btnImportRequest">Import Boom Config</button>
+  <input type="file" id="fileImportRequest" accept=".json" hidden>
+</div>
+
+      <div id="metaErr" class="form-error" hidden></div>
+    </div>
+    <div class="modal-footer">
+      <button id="btnMetaCancel" class="btn">Cancel</button>
+      <button id="btnMetaSave" class="btn primary">Save</button>
+      <button id="btnMetaSaveAs" class="btn">Save As</button>
+    </div>
+  </div>
+</div>
+
+<!-- Browse Configurations -->
+<div id="browseOverlay" class="modal-overlay" hidden>
+  <div class="modal modal-lg">
+    <div class="modal-header">
+      <div class="modal-title">Select Pre-Loaded Config</div>
+      <button class="modal-close" data-close="#browseOverlay">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="browse-toolbar">
+        <input id="browseSearch" type="search" placeholder="Search make, model, type, variant, tags…">
+        <select id="browseSource">
+          <option value="all">All</option>
+          <option value="factory">Factory</option>
+          <option value="team" disabled>Team (coming soon)</option>
+          <option value="mine">My Configs</option>
+        </select>
+        <button id="browseRefresh" class="btn">Refresh</button>
+      </div>
+      <div id="browseList" class="browse-list"></div>
+    </div>
+    <div class="modal-footer">
+      <button id="browseClose" class="btn">Close</button>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>
