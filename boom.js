@@ -143,7 +143,7 @@ const DOCS_REGISTRY = {
 };
 
 // --- 2. Demo boom config object (this will later come from your real config loader) ---
-
+const LS_CURRENT = 'boomcfg.currentConfig.v1';
 let currentConfig = loadCurrentConfigFromStorage() || createEmptyBoomConfig();
 
 let editingBoomDocIndex = null;  // already added earlier
@@ -176,7 +176,6 @@ function getConfigForSave() {
     }
   };
 }
-const LS_CURRENT = 'boomcfg.currentConfig.v1';
 
 function loadCurrentConfigFromStorage() {
   try {
@@ -2042,7 +2041,7 @@ const LS_MY='boomcfg.myConfigs.v1';
 
 // ---- Factory presets source (GitHub) ----
 // Put this JSON in your repo: /data/factory_presets.json
-const FACTORY_PRESETS_URL = "data/factory_presets.json";
+const FACTORY_PRESETS_URL = "./data/factory_presets.json";
 const LS_FACTORY='boomcfg.factoryPresets.v1';
 
   const readMy = ()=>{ try{return JSON.parse(localStorage.getItem(LS_MY)||'[]');}catch{return[];} };
