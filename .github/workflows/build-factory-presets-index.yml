@@ -1,0 +1,73 @@
+name: Build factory presets index
+
+on:
+  push:
+    paths:
+      - "boom-configurator/data/factory_presets/**/*.json"
+    paths-ignore:
+      - "boom-configurator/data/factory_presets/index.json"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build-index:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Build index.json
+        shell: bash
+        run: |
+          node <<'NODE'
+          const fs = require('fs');
+          const path = require('path');
+
+          const dir = path.join(process.cwd(), 'boom-configurator', 'data', 'factory_presets');
+          if (!fs.existsSync(dir)) {
+            console.error('Missing dir:', dir);
+            process.exit(1);
+          }
+
+          const files = fs.readdirSync(dir)
+            .filter(f => f.toLowerCase().endsWith('.json'))
+            .filter(f => f.toLowerCase() !== 'index.json')
+            .sort((a,b) => a.localeCompare(b));
+
+          const index = [];
+          for (const f of files) {
+            const full = path.join(dir, f);
+            try {
+              const txt = fs.readFileSync(full, 'utf8');
+              const cfg = JSON.parse(txt);
+              index.push({
+                file: f,
+                id: cfg?.id || cfg?.configId || f,
+                name: cfg?.name || ''
+              });
+            } catch (e) {
+              console.error('Failed to parse', f, e.message);
+              process.exit(2);
+            }
+          }
+
+          const outPath = path.join(dir, 'index.json');
+          fs.writeFileSync(outPath, JSON.stringify(index, null, 2) + '\n', 'utf8');
+          console.log('Wrote', outPath, 'entries:', index.length);
+          NODE
+
+      - name: Commit index.json if changed
+        shell: bash
+        run: |
+          git status --porcelain
+          if git diff --quiet; then
+            echo "No changes."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add boom-configurator/data/factory_presets/index.json
+          git commit -m "Auto-update factory presets index [skip ci]"
+          git push
