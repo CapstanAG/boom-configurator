@@ -2044,11 +2044,11 @@ const url = FACTORY_PRESETS_DIR + safeFile;
         return {
           ...cfg,
           id,
-          metadata: {
-            ...meta,
-            scope: meta.scope || "FACTORY_PRESET",
-            status: meta.status || "APPROVED"
-          }
+metadata: {
+  ...meta,
+  scope: "FACTORY_PRESET",
+  status: "APPROVED"
+}
         };
       });
 
