@@ -1982,7 +1982,7 @@ function cfgDisplayNameGuess(){
 // Load factory presets from localStorage + any seeded presets on the page
 function bootstrapFactoryPresets(){
   try {
-    const seeded = Array.isArray(window.FACTORY_PRESETS) ? window.FACTORY_PRESETS : [];
+    const seeded = []; // disable baked-in sample presets
 
     let stored = [];
     try {
@@ -2029,7 +2029,10 @@ async function refreshFactoryPresetsFromGitHub(){
     const fetches = indexArr
       .filter(x => x && typeof x === "object" && typeof x.file === "string" && x.file.trim())
       .map(async (row) => {
-        const url = FACTORY_PRESETS_DIR + row.file.trim();
+        const file = row.file.trim();
+// Encode spaces/special chars; keep any slashes if you later use subfolders
+const safeFile = encodeURIComponent(file).replace(/%2F/g, '/');
+const url = FACTORY_PRESETS_DIR + safeFile;
         const r = await fetch(url, { cache: "no-store" });
         if (!r.ok) throw new Error(`Preset fetch failed (${row.file}): ${r.status}`);
         const cfg = await r.json();
