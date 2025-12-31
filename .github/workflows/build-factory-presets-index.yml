@@ -3,9 +3,9 @@ name: Build factory presets index
 on:
   push:
     paths:
-      - "boom-configurator/data/factory_presets/**/*.json"
+      - "data/factory_presets/**/*.json"
     paths-ignore:
-      - "boom-configurator/data/factory_presets/index.json"
+      - "data/factory_presets/index.json"
   workflow_dispatch:
 
 permissions:
@@ -18,6 +18,11 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
       - name: Build index.json
         shell: bash
         run: |
@@ -25,7 +30,7 @@ jobs:
           const fs = require('fs');
           const path = require('path');
 
-          const dir = path.join(process.cwd(), 'boom-configurator', 'data', 'factory_presets');
+          const dir = path.join(process.cwd(), 'data', 'factory_presets');
           if (!fs.existsSync(dir)) {
             console.error('Missing dir:', dir);
             process.exit(1);
@@ -68,6 +73,6 @@ jobs:
           fi
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add boom-configurator/data/factory_presets/index.json
+          git add data/factory_presets/index.json
           git commit -m "Auto-update factory presets index [skip ci]"
           git push
