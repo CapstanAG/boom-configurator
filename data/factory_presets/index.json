@@ -1,7 +1,12 @@
 [
   {
-    "id": "millennium_jd4940",
-    "name": "Millennium Boom JD4940",
-    "file": "Millennium Boom JD4940 • Aluminum • 136.67ft • 20_ • Standard • v_Factory Preset.json"
+    "file": "Equipment Technologies All • Pommier • 90ft • 15_ • Lite.json",
+    "id": "cfg_wccg7w6uzximju0e0dd",
+    "name": "Equipment Technologies All • Pommier • 90ft • 15\" • Lite"
+  },
+  {
+    "file": "Millennium Boom JD4940 • Aluminum • 136.67ft • 20_ • Standard • v_Factory Preset.json",
+    "id": "cfg_a3yv6rtz9smjt29c12",
+    "name": "Millennium Boom JD4940 • Aluminum • 136.67ft • 20\" • Standard • v:Factory Preset Test"
   }
 ]
