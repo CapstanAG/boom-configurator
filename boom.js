@@ -2018,30 +2018,60 @@ function bootstrapFactoryPresets(){
 }
 async function refreshFactoryPresetsFromGitHub(){
   try {
-    const res = await fetch(FACTORY_PRESETS_URL, { cache: "no-store" });
-    if (!res.ok) throw new Error(`Factory presets fetch failed: ${res.status}`);
-    const arr = await res.json();
-    if (!Array.isArray(arr)) throw new Error("factory_presets.json must be an array of config objects");
+    // 1) Load folder index
+    const idxRes = await fetch(FACTORY_PRESETS_URL, { cache: "no-store" });
+    if (!idxRes.ok) throw new Error(`Factory preset index fetch failed: ${idxRes.status}`);
 
-    window.FACTORY_PRESETS = arr;
-    localStorage.setItem(LS_FACTORY, JSON.stringify(arr));
+    const indexArr = await idxRes.json();
+    if (!Array.isArray(indexArr)) throw new Error("factory_presets/index.json must be an array");
+
+    // 2) Fetch each preset JSON
+    const fetches = indexArr
+      .filter(x => x && typeof x === "object" && typeof x.file === "string" && x.file.trim())
+      .map(async (row) => {
+        const url = FACTORY_PRESETS_DIR + row.file.trim();
+        const r = await fetch(url, { cache: "no-store" });
+        if (!r.ok) throw new Error(`Preset fetch failed (${row.file}): ${r.status}`);
+        const cfg = await r.json();
+
+        // normalize id + metadata defaults (keeps Browse/locking stable)
+        const meta = cfg?.metadata || {};
+        const id = cfg?.id || cfg?.configId || row.id || row.file;
+
+        return {
+          ...cfg,
+          id,
+          metadata: {
+            ...meta,
+            scope: meta.scope || "FACTORY_PRESET",
+            status: meta.status || "APPROVED"
+          }
+        };
+      });
+
+    const loaded = (await Promise.all(fetches)).filter(Boolean);
+
+    window.FACTORY_PRESETS = loaded;
+    localStorage.setItem(LS_FACTORY, JSON.stringify(loaded));
   } catch (e) {
     // fallback to cached presets
     try {
       const cached = JSON.parse(localStorage.getItem(LS_FACTORY) || "[]");
       if (Array.isArray(cached) && cached.length) window.FACTORY_PRESETS = cached;
     } catch {}
-    DERR?.(e, 'refreshFactoryPresetsFromGitHub');
+    DERR?.(e, "refreshFactoryPresetsFromGitHub");
   }
 }
+
 
 
 
 const LS_MY='boomcfg.myConfigs.v1';
 
 // ---- Factory presets source (GitHub) ----
-// Put this JSON in your repo: /data/factory_presets.json
-const FACTORY_PRESETS_URL = "./data/factory_presets.json";
+// Factory presets (GitHub Pages): /data/factory_presets/index.json + individual preset files
+const FACTORY_PRESETS_URL = "./data/factory_presets/index.json";
+const FACTORY_PRESETS_DIR = "./data/factory_presets/";
 const LS_FACTORY='boomcfg.factoryPresets.v1';
 
   const readMy = ()=>{ try{return JSON.parse(localStorage.getItem(LS_MY)||'[]');}catch{return[];} };
