@@ -4,8 +4,6 @@ on:
   push:
     paths:
       - "data/factory_presets/**/*.json"
-    paths-ignore:
-      - "data/factory_presets/index.json"
   workflow_dispatch:
 
 permissions:
