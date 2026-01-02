@@ -1766,22 +1766,61 @@ function scheduleDraw() {
     EXT_COUNTS = Object.create(null);
     clearVCMs();
     const baseY = VCM_Y + 20, stepY = 22, hubX = boomState.hubX;
-    const left=[], right=[];
-    vcmModel.forEach(portVCMs=>{
-      const xs = portVCMs.map(v=>nozzleToX(v.mountNozzle,boomState.offsetX));
-      const minX=Math.min(...xs), maxX=Math.max(...xs);
-      if (maxX < hubX) left.push({portVCMs,minX,maxX});
-      else if (minX > hubX) right.push({portVCMs,minX,maxX});
-      else left.push({portVCMs,minX,maxX}); // straddlers → left
+    const left = [], right = [];
+
+    // Draw-once guard: a center-mounted VCM can appear in both chains,
+    // but we must only draw its rectangle + nozzle drops once.
+    const drawnVCMs = new Set(); // key = `${port}-${seq}`
+
+    vcmModel.forEach(portVCMs => {
+      const all = portVCMs
+        .map(v => ({ ...v, x: nozzleToX(v.mountNozzle, boomState.offsetX) }));
+
+      const leftList  = all.filter(v => v.x <= hubX);
+      const rightList = all.filter(v => v.x >= hubX);
+
+      if (leftList.length) {
+        const xs = leftList.map(v => v.x);
+        left.push({
+          side: 'L',
+          list: leftList,
+          minX: Math.min(...xs),
+          maxX: Math.max(...xs)
+        });
+      }
+
+      if (rightList.length) {
+        const xs = rightList.map(v => v.x);
+        right.push({
+          side: 'R',
+          list: rightList,
+          minX: Math.min(...xs),
+          maxX: Math.max(...xs)
+        });
+      }
     });
+
+    // keep your existing stack ordering
     left.sort((a,b)=>a.minX-b.minX);
     right.sort((a,b)=>b.maxX-a.maxX);
+
 
     // LEFT
     left.forEach((p,i)=>{
       const railY = baseY + (left.length-1-i)*stepY;
-      const list = p.portVCMs.map(v=>({...v,x:nozzleToX(v.mountNozzle,boomState.offsetX)})).sort((a,b)=>b.x-a.x);
-      list.forEach(v=>{ v.usedL=false; v.usedR=false; drawVCMRect(v.x, v.port+'-'+v.seq); drawDropLines(v.x, v, boomState); });
+            const list = p.list.slice().sort((a,b)=>b.x-a.x);
+
+      list.forEach(v=>{
+        v.usedL=false; v.usedR=false;
+
+        const key = `${v.port}-${v.seq}`;
+        if (!drawnVCMs.has(key)) {
+          drawVCMRect(v.x, v.port+'-'+v.seq);
+          drawDropLines(v.x, v, boomState);
+          drawnVCMs.add(key);
+        }
+      });
+
       for (let j=0;j<list.length-1;j++){
         drawExtension(list[j].x, list[j+1].x, railY,
           {type:'vcm', nozzle:list[j].mountNozzle, x:list[j].x, ref:list[j]},
@@ -1805,8 +1844,19 @@ function scheduleDraw() {
     // RIGHT
     right.forEach((p,i)=>{
       const railY = baseY + (right.length-1-i)*stepY;
-      const list = p.portVCMs.map(v=>({...v,x:nozzleToX(v.mountNozzle,boomState.offsetX)})).sort((a,b)=>a.x-b.x);
-      list.forEach(v=>{ v.usedL=false; v.usedR=false; drawVCMRect(v.x, v.port+'-'+v.seq); drawDropLines(v.x, v, boomState); });
+            const list = p.list.slice().sort((a,b)=>a.x-b.x);
+
+      list.forEach(v=>{
+        v.usedL=false; v.usedR=false;
+
+        const key = `${v.port}-${v.seq}`;
+        if (!drawnVCMs.has(key)) {
+          drawVCMRect(v.x, v.port+'-'+v.seq);
+          drawDropLines(v.x, v, boomState);
+          drawnVCMs.add(key);
+        }
+      });
+
       for (let j=0;j<list.length-1;j++){
         drawExtension(list[j].x, list[j+1].x, railY,
           {type:'vcm', nozzle:list[j].mountNozzle, x:list[j].x, ref:list[j]},
