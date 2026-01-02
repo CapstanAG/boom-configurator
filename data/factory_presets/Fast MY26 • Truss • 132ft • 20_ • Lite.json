@@ -1,0 +1,167 @@
+{
+  "id": "cfg_lsbov53f28mjxbojvy",
+  "name": "Fast MY26 • Truss • 132ft • 20\" • Lite",
+  "version": "3.8.0",
+  "createdAt": "2026-01-02T20:56:16.514Z",
+  "updatedAt": "2026-01-02T20:56:16.514Z",
+  "source": "user",
+  "meta": {
+    "totalNozzles": 72,
+    "nozzleSpacing": 20,
+    "hubMode": "lite",
+    "make": "Fast",
+    "model": "MY26",
+    "boomType": "Truss",
+    "width": 120,
+    "widthUnit": "ft",
+    "variant": "",
+    "tags": []
+  },
+  "structure": {
+    "gatewayMount": 35,
+    "folds": {
+      "breakaway": 6,
+      "outer": 11,
+      "inner": 23,
+      "primary": 32
+    }
+  },
+  "vcm": {
+    "mode": "lite",
+    "data": {
+      "1": {
+        "v1": {
+          "nozzles": 11,
+          "shift": 0
+        },
+        "v2": {
+          "nozzles": 12,
+          "shift": 0
+        },
+        "v3": {
+          "nozzles": 0,
+          "shift": 0
+        }
+      },
+      "2": {
+        "v1": {
+          "nozzles": 9,
+          "shift": 0
+        },
+        "v2": {
+          "nozzles": 8,
+          "shift": 0
+        },
+        "v3": {
+          "nozzles": 0,
+          "shift": 0
+        }
+      },
+      "3": {
+        "v1": {
+          "nozzles": 9,
+          "shift": 0
+        },
+        "v2": {
+          "nozzles": 0,
+          "shift": 0
+        },
+        "v3": {
+          "nozzles": 0,
+          "shift": 0
+        }
+      },
+      "4": {
+        "v1": {
+          "nozzles": 12,
+          "shift": 0
+        },
+        "v2": {
+          "nozzles": 11,
+          "shift": 0
+        },
+        "v3": {
+          "nozzles": 0,
+          "shift": 0
+        }
+      }
+    }
+  },
+  "extensions": {
+    "overrides": {
+      "vcm:17.5->vcm:6": 20,
+      "hub->vcm:17.5": 35,
+      "hub->vcm:28": 15,
+      "hub->vcm:36.5": 5,
+      "hub->vcm:45": 20,
+      "hub->vcm:55.5": 35,
+      "vcm:55.5->vcm:67": 25
+    },
+    "fiveFootDrops": []
+  },
+  "machine": {
+    "platform": "",
+    "make": "Fast",
+    "model": "MY26",
+    "boomType": "Truss",
+    "width": 120,
+    "widthUnit": "ft",
+    "spacingIn": 20
+  },
+  "platformDocBundles": [],
+  "boomSpecificDocs": [
+    {
+      "id": "boom-doc-1767364771560",
+      "type": "Documents",
+      "title": "Software Breaks",
+      "url": "",
+      "notes": "The documents titled v1.03.190 apply to v1.03.190 - vx.xx.xxx"
+    },
+    {
+      "id": "boom-doc-1767364809693",
+      "type": "Setup Guide",
+      "title": "Beginners Setup Guide",
+      "url": "https://capstanag.github.io/boom-configurator/documents/fast/Fast_Beginners_Setup_Guide_v1.03.190.pdf",
+      "notes": ""
+    },
+    {
+      "id": "boom-doc-1767364841320",
+      "type": "Setup Checklist",
+      "title": "Expert Setup Checklist",
+      "url": "https://capstanag.github.io/boom-configurator/documents/fast/Fast_Expert_Setup_Checklist_v1.03.190.pdf",
+      "notes": ""
+    },
+    {
+      "id": "boom-doc-1767364871835",
+      "type": "Pre-Delivery",
+      "title": "Pre-Delivery Checklist",
+      "url": "https://capstanag.github.io/boom-configurator/documents/fast/Fast_Pre-Delivery_Checklist_v1.03.190.pdf",
+      "notes": ""
+    },
+    {
+      "id": "boom-doc-1767365001085",
+      "type": "Parts",
+      "title": "Parts Document",
+      "url": "https://capstanag.github.io/boom-configurator/documents/fast/Fast_Parts_MY26.pdf",
+      "notes": ""
+    },
+    {
+      "id": "boom-doc-1767384503423",
+      "type": "Software Updates",
+      "title": "Software Update Procedure",
+      "url": "https://capstanag.github.io/boom-configurator/documents/fast/Software_Update_Proceedure.pdf",
+      "notes": ""
+    }
+  ],
+  "installSteps": {
+    "version": 2,
+    "generatedAt": "2026-01-02T20:55:57.087Z",
+    "contentHtml": "<div class=\"install-doc\">\n    <h1>Fast MY26 • Truss • 132ft • 22\" • Lite</h1>\n    <p><strong>Machine:</strong> Fast MY26</p>\n    <p><strong>Boom:</strong> 72-nozzle boom @ 20\" spacing</p>\n    <p><strong>Hub:</strong> PinPoint III Lite Hub (Ports 1–4)</p>\n  \n    <h2>Section 1 – Prep & Verification</h2>\n    <ul>\n      <li>Install PowerHub using machine-specific mounting brackets or a universal mounting kit.</li>\n      <li><strong>PowerHub mounting position:</strong> Mount PowerHub to the left of center. Orient hub with power lugs at the bottom.</li>\n      <li>If the power harness is installed, ensure the circuit breaker is tripped before continuing.</li>\n      <li>Confirm the boom on the machine matches the boom drawing (nozzle count, spacing, folds).</li>\n\t  <li>Flush/clean boom prior to valve install and confirm 80-mesh (or finer) strainers are installed.</li>\n      <li>Install all solenoid valves onto spray bodies across the boom.</li>\n      <li><strong>IMPORTANT:</strong> Do not spin o-rings when installing Spitfire valves. Hold the coil stationary while tightening the flynut.</li>\n      <li><strong>VCM orientation:</strong> mount with connectors facing the ground or perpendicular to the ground. Do not face connectors upward.</li>\n      <li><strong>VCM orientation:</strong> keep the 12-pin DT connector labeled “Left 1-6” on the left and “Right 7-12” on the right.</li>\n      <li><strong>Installer workflow:</strong> start at the leftmost boom tip and work left → right.</li>\n    </ul>\n  \n    <h2>Section 2 – VCM Map (Mount + Valve Ranges)</h2>\n    <p>Mount each VCM at the labeled position shown in the Boom Graphic.</p>\n    <table class=\"install-table\">\n      <thead>\n        <tr>\n          <th>VCM</th>\n          <th>Port</th>\n          <th>Valves</th>\n          <th>Used</th>\n          <th>6-Drop Harnesses</th>\n          <th>Dust Plugs</th>\n          <th>CAN Terminator</th>\n        </tr>\n      </thead>\n      <tbody>\n        \n      <tr>\n        <td><strong>1-1</strong></td>\n        <td>1</td>\n        <td>1–11</td>\n        <td>11</td>\n        <td>2</td>\n        <td>1</td>\n        <td>Terminate VCM</td>\n      </tr>\n    \n      <tr>\n        <td><strong>1-2</strong></td>\n        <td>1</td>\n        <td>12–23</td>\n        <td>12</td>\n        <td>2</td>\n        <td>0</td>\n        <td></td>\n      </tr>\n    \n      <tr>\n        <td><strong>2-1</strong></td>\n        <td>2</td>\n        <td>24–32</td>\n        <td>9</td>\n        <td>2</td>\n        <td>3</td>\n        <td>Terminate VCM</td>\n      </tr>\n    \n      <tr>\n        <td><strong>2-2</strong></td>\n        <td>2</td>\n        <td>33–40</td>\n        <td>8</td>\n        <td>2</td>\n        <td>4</td>\n        <td>Terminate VCM</td>\n      </tr>\n    \n      <tr>\n        <td><strong>3-1</strong></td>\n        <td>3</td>\n        <td>41–49</td>\n        <td>9</td>\n        <td>2</td>\n        <td>3</td>\n        <td>Terminate VCM</td>\n      </tr>\n    \n      <tr>\n        <td><strong>4-1</strong></td>\n        <td>4</td>\n        <td>50–61</td>\n        <td>12</td>\n        <td>2</td>\n        <td>0</td>\n        <td></td>\n      </tr>\n    \n      <tr>\n        <td><strong>4-2</strong></td>\n        <td>4</td>\n        <td>62–72</td>\n        <td>11</td>\n        <td>2</td>\n        <td>1</td>\n        <td>Terminate VCM</td>\n      </tr>\n    \n      </tbody>\n    </table>\n    <ul>\n      <li><strong>Mounting:</strong> Mount each VCM at the labeled position shown in the Boom Graphic.</li>\n      <li><strong>Nozzle Drop Harness Installation Rules:</strong> If a nozzle drop harness runs to the left of a VCM mounting position, plug it into the VCM 12-pin connector labeled <strong>Left 1-6</strong>. If it runs to the right of a VCM mounting position, plug it into the VCM 12-pin connector labeled <strong>Right 7-12</strong>.</li>\n      <li><strong>Nozzle Drop Harnesses Note:</strong> During installation of nozzle drop harnesses, drops may be skipped to go around obstacles and fold joints.</li>\n\t  <li><strong>Dust plugs:</strong> Install 2-pin Weatherpack dust plugs on all nozzle harness drops not plugged into a valve (see Dust Plugs column).</li>\n    </ul>\n  \n  <h2>Section 3 – Extension Harness Table</h2>\n  <p>Install extension harnesses per the Boom Graphic, use table as reference to boom graphic.</p>\n\n  <table class=\"install-table\">\n    <thead>\n      <tr>\n        <th>From</th>\n        <th>To</th>\n        <th>Length</th>\n      </tr>\n    </thead>\n    <tbody>\n      \n    <tr>\n      <td>VCM 1-2</td>\n      <td>VCM 1-1</td>\n      <td><strong>20'</strong></td>\n    </tr>\n  \n    <tr>\n      <td>Hub (Port 1)</td>\n      <td>VCM 1-2</td>\n      <td><strong>35'</strong></td>\n    </tr>\n  \n    <tr>\n      <td>Hub (Port 2)</td>\n      <td>VCM 2-1</td>\n      <td><strong>15'</strong></td>\n    </tr>\n  \n    <tr>\n      <td>Hub (Port 2)</td>\n      <td>VCM 2-2</td>\n      <td><strong>5'</strong></td>\n    </tr>\n  \n    <tr>\n      <td>Hub (Port 3)</td>\n      <td>VCM 3-1</td>\n      <td><strong>20'</strong></td>\n    </tr>\n  \n    <tr>\n      <td>Hub (Port 4)</td>\n      <td>VCM 4-1</td>\n      <td><strong>35'</strong></td>\n    </tr>\n  \n    <tr>\n      <td>VCM 4-1</td>\n      <td>VCM 4-2</td>\n      <td><strong>25'</strong></td>\n    </tr>\n  \n    </tbody>\n  </table>\n\n  <h3>Best Practices</h3>\n  <ul>\n    <li>Do not overtighten zip ties.</li>\n    <li>Do not zip tie harnesses permanently until initial tests are completed.</li>\n    <li>If a harness is too long and must be coiled, do not overbend it (never tighter than the radius of a soda can).</li>\n    <li>Avoid routing over rough surfaces and sharp points.</li>\n    <li>Add additional protection in high-friction areas.</li>\n  </ul>\n</div>",
+    "source": "auto"
+  },
+  "metadata": {
+    "docsVersion": 1,
+    "scope": "MY_CONFIG",
+    "status": "DRAFT"
+  }
+}
