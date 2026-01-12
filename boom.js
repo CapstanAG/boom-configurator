@@ -2949,20 +2949,30 @@ if (act === 'reject') {
 // --- writeExtensions: { extId:string -> lengthFt:number } (preserve string keys)
 window.writeExtensions = function writeExtensions(overrides){
   try{
-    // Always operate on the shared Map
-    const map = (window.extOverrides instanceof Map) ? window.extOverrides : extOverrides;
-    window.extOverrides = map;
-    // Always clear previous values, even if input is null/undefined
-    map.clear();
-    if (overrides && typeof overrides === 'object') {
+    // ALWAYS use the shared Map that the label-click handler writes into
+    // (this preserves manual override behavior + saving behavior)
+    window.extOverrides = extOverrides;
+
+    // Clear previous overrides and apply imported ones (if any)
+    extOverrides.clear();
+
+    if (overrides instanceof Map) {
+      overrides.forEach((v, k) => {
+        const ft = Number(v);
+        if (Number.isFinite(ft) && ft > 0) extOverrides.set(String(k), Math.round(ft));
+      });
+    } else if (overrides && typeof overrides === 'object') {
       for (const [k, v] of Object.entries(overrides)) {
         const ft = Number(v);
-        if (Number.isFinite(ft) && ft > 0) map.set(String(k), Math.round(ft));
+        if (Number.isFinite(ft) && ft > 0) extOverrides.set(String(k), Math.round(ft));
       }
     }
+
     if (typeof scheduleDraw === 'function') scheduleDraw();
   } catch (e) { DERR?.(e, 'writeExtensions'); }
 };
+
+
 
 
 // --- writeFiveDrops: apply 5' drop flags from [nozzleIndex] list (no UI IDs assumed) ---
