@@ -21,6 +21,13 @@ function createEmptyBoomConfig(overrides = {}) {
     platformDocBundles: [],   // array of { id, label, platform, docs: DocItem[] }
     boomSpecificDocs: [],     // array of DocItem
 
+	extensions: {
+      overrides: {},
+      fiveFootDrops: [],
+      dropExt5ftQty: 0
+    },
+
+
     installSteps: {           // container for generated instructions
       version: 1,
       generatedAt: null,
@@ -1936,7 +1943,7 @@ function scheduleDraw() {
 
     // 5' nozzle drop extension (user-entered)
     const userRow=document.createElement('tr');
-    userRow.innerHTML = `<td>118673-001</td><td>5' Nozzle Drop Extension</td><td><input id="user-ext-input" type="number" min="0" value="${window.USER_DROP_EXT_QTY||0}" style="width:70px;height:26px;"></td>`;
+    userRow.innerHTML = `<td>118673-001</td><td>5' Nozzle Drop Extension</td><td><input id="user-ext-input" type="number" min="0" value="${(currentConfig?.extensions?.dropExt5ftQty ?? window.USER_DROP_EXT_QTY ?? 0)}" style="width:70px;height:26px;"></td>`;
     tbody.appendChild(userRow);
 
     extRows.forEach(r=> addRow(r.pn, r.desc, r.qty));
@@ -1949,10 +1956,18 @@ function scheduleDraw() {
 
   partsTableRoot?.addEventListener('input', (e) => {
     const inp = e.target;
-    if (inp && inp.id === 'user-ext-input') {
+if (inp && inp.id === 'user-ext-input') {
       window.USER_DROP_EXT_QTY = Math.max(0, Math.floor(+inp.value || 0));
+
+      if (currentConfig) {
+        currentConfig.extensions = currentConfig.extensions || {};
+        currentConfig.extensions.dropExt5ftQty = window.USER_DROP_EXT_QTY;
+      }
+
+      saveCurrentConfigToStorage();
       renderPartsList(lastBoomState, lastVCMModel);
-    }
+}
+
   });
 
   // ----- Boom meta (title/info) -----
@@ -2205,9 +2220,10 @@ function serializeCurrentToConfig(meta, asNewId=false){
 
     vcm: vcmSnap,
 
-    extensions: {
-      overrides,           // 10
-      fiveFootDrops        // 11
+        extensions: {
+      overrides,                               // 10
+      fiveFootDrops,                           // 11
+      dropExt5ftQty: (Number(window.USER_DROP_EXT_QTY) || 0) // 12
     }
   };
 
@@ -2522,6 +2538,8 @@ if (typeof window.applyConfigToUI !== 'function') {
       if (typeof window.writeFiveDrops === 'function') {
         window.writeFiveDrops(cfg?.extensions?.fiveFootDrops);
       }
+
+	window.USER_DROP_EXT_QTY = Number(cfg?.extensions?.dropExt5ftQty) || 0;
 
       // redraw
       if (typeof window.extOverrides?.size === 'number' && typeof scheduleDraw === 'function') {
