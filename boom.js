@@ -2539,6 +2539,47 @@ if (typeof window.applyConfigToUI !== 'function') {
   };
 }
 
+	  // --- writeVCMs: apply counts + shifts into the UI (supports lite/standard) ---
+window.writeVCMs = function writeVCMs(v){
+  try{
+    // Expect either { mode, data } (preferred) or flat map like { "1-1":12, "2-1":6 } or {"1-1":{nozzles,shift}}
+    const applyPair = (p, seq, count, shift=0) => {
+      const inp  = document.querySelector(`#vcmFields input[data-port="${p}"][data-vcm="${seq}"]`);
+      const flag = document.querySelector(`#vcmFields .shift-flag[data-port="${p}"][data-vcm="${seq}"]`);
+      if (inp)  inp.value = isFinite(count) ? Number(count) : 0;
+      if (flag) {
+        flag.textContent = String(isFinite(shift) ? Number(shift) : 0);
+        flag.style.display = (shift ? 'inline' : 'none');
+      }
+      if (typeof updateShiftDisplay === 'function') {
+        const cell = document.querySelector(
+          `#vcmFields .vcm-cell[data-port="${p}"][data-vcm="${seq}"]`
+        );
+        if (cell) updateShiftDisplay(cell, isFinite(shift) ? Number(shift) : 0);
+      }
+    };
+
+    if (v && v.data) {
+      Object.entries(v.data).forEach(([p,obj])=>{
+        [1,2,3].forEach(seq=>{
+          const node = obj['v'+seq] || {};
+          applyPair(p, seq, node.nozzles, node.shift);
+        });
+      });
+      return;
+    }
+
+    // flat map fallback
+    Object.entries(v||{}).forEach(([k,val])=>{
+      const m = String(k).match(/^(\d+)[-:_](\d+)$/);
+      if (!m) return;
+      const p=m[1], seq=m[2];
+      if (val && typeof val === 'object') applyPair(p, seq, val.nozzles ?? val.count ?? 0, val.shift ?? 0);
+      else applyPair(p, seq, val ?? 0, 0);
+    });
+  }catch(e){ DERR?.(e,'writeVCMs'); }
+};
+
 // Approval queue modal (local-only)
 {
   const overlay = el('approvalOverlay'),
@@ -2903,46 +2944,7 @@ if (act === 'reject') {
         DERR(e,'browse.render.outer');
         listEl.innerHTML = '<div style="padding:12px;color:#c00;">Failed to render configurations. See debug console (F9).</div>';
       }
-	  // --- writeVCMs: apply counts + shifts into the UI (supports lite/standard) ---
-window.writeVCMs = function writeVCMs(v){
-  try{
-    // Expect either { mode, data } (preferred) or flat map like { "1-1":12, "2-1":6 } or {"1-1":{nozzles,shift}}
-    const applyPair = (p, seq, count, shift=0) => {
-      const inp  = document.querySelector(`#vcmFields input[data-port="${p}"][data-vcm="${seq}"]`);
-      const flag = document.querySelector(`#vcmFields .shift-flag[data-port="${p}"][data-vcm="${seq}"]`);
-      if (inp)  inp.value = isFinite(count) ? Number(count) : 0;
-      if (flag) {
-        flag.textContent = String(isFinite(shift) ? Number(shift) : 0);
-        flag.style.display = (shift ? 'inline' : 'none');
-      }
-      if (typeof updateShiftDisplay === 'function') {
-        const cell = document.querySelector(
-          `#vcmFields .vcm-cell[data-port="${p}"][data-vcm="${seq}"]`
-        );
-        if (cell) updateShiftDisplay(cell, isFinite(shift) ? Number(shift) : 0);
-      }
-    };
 
-    if (v && v.data) {
-      Object.entries(v.data).forEach(([p,obj])=>{
-        [1,2,3].forEach(seq=>{
-          const node = obj['v'+seq] || {};
-          applyPair(p, seq, node.nozzles, node.shift);
-        });
-      });
-      return;
-    }
-
-    // flat map fallback
-    Object.entries(v||{}).forEach(([k,val])=>{
-      const m = String(k).match(/^(\d+)[-:_](\d+)$/);
-      if (!m) return;
-      const p=m[1], seq=m[2];
-      if (val && typeof val === 'object') applyPair(p, seq, val.nozzles ?? val.count ?? 0, val.shift ?? 0);
-      else applyPair(p, seq, val ?? 0, 0);
-    });
-  }catch(e){ DERR?.(e,'writeVCMs'); }
-};
 
 // --- writeExtensions: { extId:string -> lengthFt:number } (preserve string keys)
 window.writeExtensions = function writeExtensions(overrides){
