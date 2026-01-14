@@ -1784,8 +1784,14 @@ function scheduleDraw() {
       const all = portVCMs
         .map(v => ({ ...v, x: nozzleToX(v.mountNozzle, boomState.offsetX) }));
 
-      const leftList  = all.filter(v => v.x <= hubX);
-      const rightList = all.filter(v => v.x >= hubX);
+const EPS = 0.001; // pixels; tiny on purpose
+
+const leftList  = all.filter(v => v.x < hubX - EPS);
+const rightList = all.filter(v => v.x > hubX + EPS);
+
+// VCMs exactly (or extremely near) the hub line: assign to ONE side only
+const centerList = all.filter(v => Math.abs(v.x - hubX) <= EPS);
+if (centerList.length) leftList.push(...centerList);
 
       if (leftList.length) {
         const xs = leftList.map(v => v.x);
