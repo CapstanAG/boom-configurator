@@ -1,6 +1,6 @@
 {
   "id": "cfg_h1ru8j6wy6pmlpc6a39",
-  "name": "Equipment Technologies MY26 • Pommier • 101.25ft • 15\" • Lite",
+  "name": "Equipment Technologies MY26 • Pommier • 100ft • 15\" • Lite",
   "version": "3.8.0",
   "createdAt": "2026-02-16T15:40:13.433Z",
   "updatedAt": "2026-02-16T15:40:13.433Z",
@@ -12,7 +12,7 @@
     "make": "Equipment Technologies",
     "model": "MY26",
     "boomType": "Pommier",
-    "width": 101.25,
+    "width": 100,
     "widthUnit": "ft",
     "variant": "",
     "tags": []
