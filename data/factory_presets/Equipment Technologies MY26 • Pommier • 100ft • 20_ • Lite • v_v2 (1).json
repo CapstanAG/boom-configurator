@@ -142,6 +142,13 @@
       "title": "Parts Document",
       "url": "https://capstanag.github.io/boom-configurator/documents/et/ET_Parts_MY26.pdf",
       "notes": ""
+    },
+    {
+      "id": "boom-doc-1771509545307",
+      "type": "Diagnostic",
+      "title": "Diagnostic Method",
+      "url": "https://capstanag.github.io/boom-configurator/documents/et/Diagnostic%20Method.pdf",
+      "notes": ""
     }
   ],
   "installSteps": {
