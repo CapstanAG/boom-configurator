@@ -1,9 +1,9 @@
 {
-  "id": "cfg_mf9a76uqpg8mjxch2ef",
+  "id": "cfg_cx12nzqdbfmokbjh9d",
   "name": "Fast MY26 • 9524T • 120ft • 20\" • Lite",
   "version": "3.8.0",
-  "createdAt": "2026-01-02T21:00:32.366Z",
-  "updatedAt": "2026-01-02T21:00:32.366Z",
+  "createdAt": "2026-04-29T17:18:14.305Z",
+  "updatedAt": "2026-04-29T17:18:14.305Z",
   "source": "user",
   "meta": {
     "totalNozzles": 72,
@@ -90,14 +90,15 @@
   "extensions": {
     "overrides": {
       "vcm:16.5->vcm:6.5": 20,
-      "hub->vcm:16.5": 35,
+      "hub->vcm:16.5": 40,
       "vcm:28->vcm:34": 20,
       "hub->vcm:34": 5,
       "hub->vcm:45": 20,
       "vcm:45->vcm:56.5": 20,
-      "hub->vcm:66.5": 55
+      "hub->vcm:66.5": 60
     },
-    "fiveFootDrops": []
+    "fiveFootDrops": [],
+    "dropExt5ftQty": 0
   },
   "machine": {
     "platform": "",
